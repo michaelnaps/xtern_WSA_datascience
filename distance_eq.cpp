@@ -13,6 +13,7 @@
 		- travel time between scooters within a given cluster is negligible
 			- thus the time needed to charge all scooters in each cluster is equal to:
 				time = (5 - average battery value of scooters in cluster) * (number of scooters in cluster)
+		- a cluster is defined as a group of scooters within 0.3-0.4 coordinate units of the central point location
 */
 
 #include <iostream>

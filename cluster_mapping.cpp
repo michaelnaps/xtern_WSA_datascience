@@ -45,35 +45,54 @@ bool open_scooter_data(string filename, vector<Point> &pt_vect, vector<int> &bat
 
 int main()
 {
-	vector<Point> scooter_locations;
-	vector<Point> battery_levels;
-	Point cluster1, cluster2, cluster3, cluster4, cluster5;
-	Point cluster6, cluster7, cluster8, cluster9, cluster10;
-	Point cluster11, cluster12, cluster13, cluster14, cluster15;
-	Point cluster16, cluster17, cluster18, cluster19;
+	vector<Point> scooter_location;  // x-y coordinates for all scooters
+	vector<int> battery_level;  // battery levels for all scooters
+	vector<int> cluster_battery_total;  // vector for the battery totals within each cluster
+	vector<int> cluster_scooter_count(19, 0);  // initialize all cluster counts to 0
+	
+	// point coordinates for all cluster centers (approximations)
+	Point cluster0, cluster1, cluster2, cluster3, cluster4;
+	Point cluster5, cluster6, cluster7, cluster8, cluster9;
+	Point cluster10, cluster11, cluster12, cluster13, cluster14;
+	Point cluster15, cluster16, cluster17, cluster18;
 	
 	// set x-y coordinates for all cluster centers (approximations)
-	cluster1.setXY(-0.2629, 0.0257554);
-	cluster2.setXY(-0.14166, 0.044576);
-	cluster3.setXY(-0.121695, 0.032001745);
-	cluster4.setXY(-0.15734775, -0.225367);
-	cluster5.setXY(-0.0783579, -0.089191762);
-	cluster6.setXY(0.25259396, -0.255784);
-	cluster7.setXY(0.3670516, -0.133839);
-	cluster8.setXY(0.224613, -0.0397119);
-	cluster9.setXY(0.2248988, 0.128302156);
-	cluster10.setXY(0.4084014, 0.05894188);
-	cluster11.setXY(0.753407026, 0.582915994);
-	cluster12.setXY(0.899725064, 0.79902133);
-	cluster13.setXY(0.971003419, 0.729568099);
-	cluster14.setXY(0.940631136, 0.897551968);
-	cluster15.setXY(0.598929847, 1.028950732);
-	cluster16.setXY(1.342009952, 0.878407338);
-	cluster17.setXY(0.83996793, 1.163331194);
-	cluster18.setXY(0.961196543, 1.296743324);
-	cluster19.setXY(1.16733764, 1.3264618);
+	cluster0.setXY(-0.2629, 0.0257554);
+	cluster1.setXY(-0.14166, 0.044576);
+	cluster2.setXY(-0.121695, 0.032001745);
+	cluster3.setXY(-0.15734775, -0.225367);
+	cluster4.setXY(-0.0783579, -0.089191762);
+	cluster5.setXY(0.25259396, -0.255784);
+	cluster6.setXY(0.3670516, -0.133839);
+	cluster7.setXY(0.224613, -0.0397119);
+	cluster8.setXY(0.2248988, 0.128302156);
+	cluster9.setXY(0.4084014, 0.05894188);
+	cluster10.setXY(0.753407026, 0.582915994);
+	cluster11.setXY(0.899725064, 0.79902133);
+	cluster12.setXY(0.971003419, 0.729568099);
+	cluster13.setXY(0.940631136, 0.897551968);
+	cluster14.setXY(0.598929847, 1.028950732);
+	cluster15.setXY(1.342009952, 0.878407338);
+	cluster16.setXY(0.83996793, 1.163331194);
+	cluster17.setXY(0.961196543, 1.296743324);
+	cluster18.setXY(1.16733764, 1.3264618);
 	
-	if (open_scooter_data("data_set_simplified_format.txt", scooter_locations, battery_levels)) {
+	if (open_scooter_data("data_set_simplified_format.txt", scooter_location, battery_level)) {
+		for (int i(0); i < scooter_location.size(); ++i) {
+			if (distance(cluster0, scooter_location[i]) < 0.35) {
+				cluster_battery_total[0] += battery_level[i];
+				++cluster_scooter_count[0];
+			}
+			else if (distance(cluster1, scooter_location[i]) < 0.35) {
+				cluster_battery_total[1] += battery_level[i];
+				++cluster_scooter_count[1];
+			}
+		}
+	}
+	
+	for (int i(0); i < cluster_scooter_count.size(); ++i) {
+		cout << "There are " << cluster_scooter_count[i] << " scooters in cluster " << i << "." << endl;
+	}
 	
 	return 0;
 }
@@ -83,12 +102,8 @@ int main()
 // FUNCTION: distance()
 // calculate the distance between two point values (class type) and returns it
 double distance(Point &pt1, Point &pt2) {
-	double distance;
-	
-	// calculate the distance between points using pythagorean's theorem
-	distance = sqrt(pow((pt1.getX() - pt2.getX()), 2) + pow((pt1.getY() - pt2.getY()), 2));
-	
-	return distance;
+	// use pythagorean's theorem to calculate distance
+	return (sqrt(pow((pt1.getX() - pt2.getX()), 2) + pow((pt1.getY() - pt2.getY()), 2)));
 }
 
 // FUNCTION: open_scooter_data()
@@ -118,6 +133,8 @@ bool open_scooter_data(string filename, vector<Point> &pt_vect, vector<int> &bat
 		pt_vect.push_back(temp_pt);  // add point to appropriate vecotor		
 		batt_vect.push_back(temp_batt);  // add to battery level vector
 	}
+	
+	cout << "Data file read in successfully." << endl;
 	
 	fin.close();
 	
