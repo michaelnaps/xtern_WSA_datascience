@@ -11,8 +11,9 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include <fstream>
 #include <string>
+#include <fstream>
+#include <iomanip>  // needed only for temporary command prompt data evaluation
 using namespace std;
 
 // POINT CLASS TYPE
@@ -61,7 +62,7 @@ int main()
 	// for every 'temp_point' there is a subsequent push_back in the clusters vector
 	temp_point.setXY(-0.2629, 0.0257554); cluster.push_back(temp_point);
 	temp_point.setXY(-0.14166, 0.044576); cluster.push_back(temp_point);
-	temp_point.setXY(-0.121695, 0.032001745); cluster.push_back(temp_point);
+	temp_point.setXY(-0.121695, 0.32001745); cluster.push_back(temp_point);
 	temp_point.setXY(-0.15734775, -0.225367); cluster.push_back(temp_point);
 	temp_point.setXY(-0.0783579, -0.089191762); cluster.push_back(temp_point);
 	temp_point.setXY(0.25259396, -0.255784); cluster.push_back(temp_point);
@@ -92,16 +93,19 @@ int main()
 		}
 	}
 	
-	// The following for loop was used to evaluate data in command prompt before write to file
+	// The following for loop was used to evaluate data in command prompt before writing to file
 	/*
 	for (int i(0); i < cluster_scooter_count.size(); ++i) {
-		cout << "There are " << cluster_scooter_count[i] << " scooters in cluster " << i << "." << endl;
+		cout << "Cluster " << i << ").  ";
 		
-		cout << "Average battery power of cluster: ";
-		cout << ((double)cluster_battery_total[i] / (double)cluster_scooter_count[i]) << endl;
+		//number of scooters in cluster
+		cout << setw(6) << right << cluster_scooter_count[i];
 		
-		cout << "Percent of scooters in this cluster: ";
-		cout << (((double)cluster_scooter_count[i] / (double)scooter_location.size()) * 100)  << endl;
+		// average battery level of scooters in cluster
+		cout << setw(15) << right << ((double)cluster_battery_total[i] / (double)cluster_scooter_count[i]);
+		
+		// percent of total scooters located in given cluster
+		cout << setw(15) << right << (((double)cluster_scooter_count[i] / (double)scooter_location.size()) * 100)  << endl;
 	}
 	*/
 	
@@ -162,7 +166,7 @@ bool write_cluster_data(const string filename, const vector<int> cl_count, const
 	fout.open(filename.c_str(), ios::ate);
 	// check if file is open
 	if (!fout.is_open()) {
-		cout << "ERROR: Could not access/create " << filename << "." << endl;
+		cout << "ERROR: Could not access/create " << filename << endl;
 		return false;
 	}
 	
@@ -173,10 +177,11 @@ bool write_cluster_data(const string filename, const vector<int> cl_count, const
 	}
 	
 	// place collumn titles in file location
-	fout << "cluster_total" << "," << "percent_scooters" << "," << "battery_average" << endl;
+	fout << "cluster_ID" << "," << "cluster_total" << "," << "percent_scooters" << "," << "battery_average" << endl;
 	
 	// print data to appropriate collumns
 	for (int i(0); i < cl_count.size(); ++i) {
+		fout << i << ",";
 		fout << cl_count[i] << ",";
 		fout << (((double)cl_count[i] / (double)scooter_total) * 100) << ",";
 		fout << ((double)cl_batt_total[i] / (double)cl_count[i]) << "," << endl;
