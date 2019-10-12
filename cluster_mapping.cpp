@@ -42,56 +42,72 @@ class Point
 // FUNCTION INITIALIZATIONS
 double distance(Point &pt1, Point &pt2);
 bool open_scooter_data(string filename, vector<Point> &pt_vect, vector<int> &batt_vect);
+bool write_cluster_data(const string filename, const vector<int> cl_count, const vector<int> cl_batt_total, const int scooter_total);
 
 int main()
 {
+	Point temp_point;
 	vector<Point> scooter_location;  // x-y coordinates for all scooters
 	vector<int> battery_level;  // battery levels for all scooters
-	vector<int> cluster_battery_total;  // vector for the battery totals within each cluster
+	vector<int> cluster_battery_total(19, 0);  // vector for the battery totals within each cluster
 	vector<int> cluster_scooter_count(19, 0);  // initialize all cluster counts to 0
+	const double CLUSTER_RADIUS(0.04);
+	int cluster_total(0);
 	
-	// point coordinates for all cluster centers (approximations)
-	Point cluster0, cluster1, cluster2, cluster3, cluster4;
-	Point cluster5, cluster6, cluster7, cluster8, cluster9;
-	Point cluster10, cluster11, cluster12, cluster13, cluster14;
-	Point cluster15, cluster16, cluster17, cluster18;
+	// point coordinates for all cluster centers
+	vector<Point> cluster;
 	
 	// set x-y coordinates for all cluster centers (approximations)
-	cluster0.setXY(-0.2629, 0.0257554);
-	cluster1.setXY(-0.14166, 0.044576);
-	cluster2.setXY(-0.121695, 0.032001745);
-	cluster3.setXY(-0.15734775, -0.225367);
-	cluster4.setXY(-0.0783579, -0.089191762);
-	cluster5.setXY(0.25259396, -0.255784);
-	cluster6.setXY(0.3670516, -0.133839);
-	cluster7.setXY(0.224613, -0.0397119);
-	cluster8.setXY(0.2248988, 0.128302156);
-	cluster9.setXY(0.4084014, 0.05894188);
-	cluster10.setXY(0.753407026, 0.582915994);
-	cluster11.setXY(0.899725064, 0.79902133);
-	cluster12.setXY(0.971003419, 0.729568099);
-	cluster13.setXY(0.940631136, 0.897551968);
-	cluster14.setXY(0.598929847, 1.028950732);
-	cluster15.setXY(1.342009952, 0.878407338);
-	cluster16.setXY(0.83996793, 1.163331194);
-	cluster17.setXY(0.961196543, 1.296743324);
-	cluster18.setXY(1.16733764, 1.3264618);
+	// for every 'temp_point' there is a subsequent push_back in the clusters vector
+	temp_point.setXY(-0.2629, 0.0257554); cluster.push_back(temp_point);
+	temp_point.setXY(-0.14166, 0.044576); cluster.push_back(temp_point);
+	temp_point.setXY(-0.121695, 0.032001745); cluster.push_back(temp_point);
+	temp_point.setXY(-0.15734775, -0.225367); cluster.push_back(temp_point);
+	temp_point.setXY(-0.0783579, -0.089191762); cluster.push_back(temp_point);
+	temp_point.setXY(0.25259396, -0.255784); cluster.push_back(temp_point);
+	temp_point.setXY(0.3670516, -0.133839); cluster.push_back(temp_point);
+	temp_point.setXY(0.224613, -0.0397119); cluster.push_back(temp_point);
+	temp_point.setXY(0.2248988, 0.128302156); cluster.push_back(temp_point);
+	temp_point.setXY(0.4084014, 0.05894188); cluster.push_back(temp_point);
+	temp_point.setXY(0.753407026, 0.582915994); cluster.push_back(temp_point);
+	temp_point.setXY(0.899725064, 0.79902133); cluster.push_back(temp_point);
+	temp_point.setXY(0.971003419, 0.729568099); cluster.push_back(temp_point);
+	temp_point.setXY(0.940631136, 0.897551968); cluster.push_back(temp_point);
+	temp_point.setXY(0.598929847, 1.028950732); cluster.push_back(temp_point);
+	temp_point.setXY(1.342009952, 0.878407338); cluster.push_back(temp_point);
+	temp_point.setXY(0.83996793, 1.163331194); cluster.push_back(temp_point);
+	temp_point.setXY(0.961196543, 1.296743324); cluster.push_back(temp_point);
+	temp_point.setXY(1.16733764, 1.3264618); cluster.push_back(temp_point);
 	
-	if (open_scooter_data("data_set_simplified_format.txt", scooter_location, battery_level)) {
+	if (open_scooter_data("data_set_simplified_format.txt", scooter_location, battery_level)) {		
+		// cout << "Total number of scooters: " << scooter_location.size() << endl << endl;		
 		for (int i(0); i < scooter_location.size(); ++i) {
-			if (distance(cluster0, scooter_location[i]) < 0.35) {
-				cluster_battery_total[0] += battery_level[i];
-				++cluster_scooter_count[0];
-			}
-			else if (distance(cluster1, scooter_location[i]) < 0.35) {
-				cluster_battery_total[1] += battery_level[i];
-				++cluster_scooter_count[1];
+			for (int k(0); k < cluster.size(); ++k) {
+				if (distance(cluster[k], scooter_location[i]) < CLUSTER_RADIUS) {
+					cluster_battery_total[k] += battery_level[i];
+					++cluster_scooter_count[k];
+					break;
+				}
 			}
 		}
 	}
 	
+	// The following for loop was used to evaluate data in command prompt before write to file
+	/*
 	for (int i(0); i < cluster_scooter_count.size(); ++i) {
 		cout << "There are " << cluster_scooter_count[i] << " scooters in cluster " << i << "." << endl;
+		
+		cout << "Average battery power of cluster: ";
+		cout << ((double)cluster_battery_total[i] / (double)cluster_scooter_count[i]) << endl;
+		
+		cout << "Percent of scooters in this cluster: ";
+		cout << (((double)cluster_scooter_count[i] / (double)scooter_location.size()) * 100)  << endl;
+	}
+	*/
+	
+	// write data to appropriate file for final evaluation
+	if (write_cluster_data("cluster_data.csv", cluster_scooter_count, cluster_battery_total, scooter_location.size())) {
+		cout << "Data saved successfully." << endl;
 	}
 	
 	return 0;
@@ -134,13 +150,42 @@ bool open_scooter_data(string filename, vector<Point> &pt_vect, vector<int> &bat
 		batt_vect.push_back(temp_batt);  // add to battery level vector
 	}
 	
-	cout << "Data file read in successfully." << endl;
-	
 	fin.close();
 	
 	return true;
 }
 
+bool write_cluster_data(const string filename, const vector<int> cl_count, const vector<int> cl_batt_total, const int scooter_total) {
+	ofstream fout;
+	
+	// open file specified
+	fout.open(filename.c_str(), ios::ate);
+	// check if file is open
+	if (!fout.is_open()) {
+		cout << "ERROR: Could not access/create " << filename << "." << endl;
+		return false;
+	}
+	
+	// check data is equal in vector length before writing
+	if (cl_batt_total.size() != cl_count.size()) {
+		cout << "ERROR: Cluster battery total and cluster count not equal." << endl;
+		return false;
+	}
+	
+	// place collumn titles in file location
+	fout << "cluster_total" << "," << "percent_scooters" << "," << "battery_average" << endl;
+	
+	// print data to appropriate collumns
+	for (int i(0); i < cl_count.size(); ++i) {
+		fout << cl_count[i] << ",";
+		fout << (((double)cl_count[i] / (double)scooter_total) * 100) << ",";
+		fout << ((double)cl_batt_total[i] / (double)cl_count[i]) << "," << endl;
+	}
+	
+	fout.close();
+	
+	return true;
+}
 
 
 
