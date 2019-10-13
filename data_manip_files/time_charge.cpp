@@ -15,32 +15,7 @@
 #include <fstream>
 using namespace std;
 
-// POINT CLASS TYPE
-// class type made for the calculation of distance values and coordinate manipulation
-class Point
-{
-	private:
-	double x;  // x-coordinate
-	double y;  // y-coordinate
-	
-	public:
-	
-	// set class functions (sets the x and y coordinate respectively)
-	void setX(const double temp_x) { x = temp_x; }
-	void setY(const double temp_y) { y = temp_y; }
-	void setXY(const double temp_x, const double temp_y) {
-		x = temp_x;
-		y = temp_y;
-	}
-	
-	// returns the appropriate value
-	double getX() { return x; }
-	double getY() { return y; }
-	void getCoordinates() { cout << "(" << x << "," << y << ")"; }
-};
-
 // FUNCTION INITIALIZATIONS
-double distance(Point &pt1, Point &pt2);
 bool open_cluster_data(string filename, vector<int> &cluster_num, vector<double> &battery_average);
 bool write_cluster_time(const string filename, const vector<double> &cluster_time);
 
@@ -67,13 +42,6 @@ int main()
 	}
 	
 	return 0;
-}
-
-// FUNCTION: distance()
-// calculate the distance between two point values (class type) and returns it
-double distance(Point &pt1, Point &pt2) {
-	// use pythagorean's theorem to calculate distance
-	return (sqrt(pow((pt1.getX() - pt2.getX()), 2) + pow((pt1.getY() - pt2.getY()), 2)));
 }
 
 // FUNCTION: open_scooter_data()
