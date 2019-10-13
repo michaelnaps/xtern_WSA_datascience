@@ -5,15 +5,6 @@
 /*
 	Program that reads in x and y values for scooter locations
 	and calculates their distance from the bus parking spot.
-	
-	Assumptions made about prompt:
-		- a given point on the x-y plane is equal to 1 mile
-		- the bus will travel to the first cluster at maximum speed (average 50 mph)
-		- the bus will travel in between clusters at maximium speed (average 50 mph)
-		- travel time between scooters within a given cluster is negligible
-			- thus the time needed to charge all scooters in each cluster is equal to:
-				time = (5 - average battery value of scooters in cluster) * (number of scooters in cluster)
-		- a cluster is defined as a group of scooters within 0.4 coordinate units of the central point location
 */
 
 #include <iostream>
@@ -59,7 +50,6 @@ int main()
 	vector<int> battery_level;
 	vector<double> scooter_distance;
 	double d_total(0), d_average(0);
-	double battery_total(0), battery_average(0);
 	
 	BUS_LOC.setX(20.19);
 	BUS_LOC.setY(20.19);
@@ -81,14 +71,6 @@ int main()
 		// calulate average distance from bus for all scooters
 		d_average = (d_total / scooter_location.size());
 		cout << "Average distance from bus: " << d_average << endl;
-		
-		// for loop that adds all battery power levels together
-		for (int i(0); i < battery_level.size(); ++i) {
-			battery_total =+ (double)battery_level[i];
-		}
-		battery_average = (battery_total / battery_level.size());  // find average of all battery levels
-		cout << "Average battery charge for all scooters: " << battery_average << endl;
-		cout << "Average time needed to charge scooter battery: " << (5 - battery_average) << " hours" << endl << endl;
 		
 		// save the distance data
 		write_vect_data("distance_from_bus_data.csv", scooter_distance);

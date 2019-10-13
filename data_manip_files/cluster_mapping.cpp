@@ -47,13 +47,12 @@ bool write_cluster_data(const string filename, const vector<int> cl_count, const
 
 int main()
 {
-	Point temp_point;
+	Point temp_point;  // temporary point value for transfer to cluster vector
 	vector<Point> scooter_location;  // x-y coordinates for all scooters
 	vector<int> battery_level;  // battery levels for all scooters
 	vector<int> cluster_battery_total(19, 0);  // vector for the battery totals within each cluster
 	vector<int> cluster_scooter_count(19, 0);  // initialize all cluster counts to 0
-	const double CLUSTER_RADIUS(0.04);
-	int cluster_total(0);
+	const double CLUSTER_RADIUS(0.04);  // approximate cluster radius
 	
 	// point coordinates for all cluster centers
 	vector<Point> cluster;
@@ -81,13 +80,15 @@ int main()
 	temp_point.setXY(1.16733764, 1.3264618); cluster.push_back(temp_point);
 	
 	if (open_scooter_data("data_set_simplified_format.txt", scooter_location, battery_level)) {		
-		// cout << "Total number of scooters: " << scooter_location.size() << endl << endl;		
+		// for all scooter locations
 		for (int i(0); i < scooter_location.size(); ++i) {
+			// check to see what cluster they are located in
 			for (int k(0); k < cluster.size(); ++k) {
+				// if they are in the given cluster
 				if (distance(cluster[k], scooter_location[i]) < CLUSTER_RADIUS) {
-					cluster_battery_total[k] += battery_level[i];
-					++cluster_scooter_count[k];
-					break;
+					cluster_battery_total[k] += battery_level[i];  // add their battery value to the cluster total
+					++cluster_scooter_count[k];  // iterate the cluster's population value
+					break;  // break loop and continue to next scooter
 				}
 			}
 		}
@@ -159,7 +160,7 @@ bool open_scooter_data(string filename, vector<Point> &pt_vect, vector<int> &bat
 	return true;
 }
 
-bool write_cluster_data(const string filename, const vector<int> cl_count, const vector<int> cl_batt_total, const int scooter_total) {
+bool write_cluster_data(const &string filename, const vector<int> &cl_count, const vector<int> &cl_batt_total, const int &scooter_total) {
 	ofstream fout;
 	
 	// open file specified
